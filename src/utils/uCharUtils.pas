@@ -28,6 +28,8 @@ type
     class function getMiddleChar(const S: string; const c1, c2: char;
       const incl: boolean=false): string; static;
     class function ReplaceSub(str: string; const sub1, sub2: String): String; static;
+    class function getClassName(const tblName: string): string; static;
+    class function getPropertyName(const fldName: string): string; static;
 end;
 
 implementation
@@ -191,6 +193,60 @@ begin
     aPos := Pos(sub1, str);
   end;
   Result := rslt + str;
+end;
+
+class function TCharUtils.getClassName(const tblName: string): string;
+var ss: TStrings;
+  i: integer;
+  s: string;
+begin
+  Result := '';
+  ss := TStringList.Create;
+  try
+    //pos_t_vip_type
+    ss.StrictDelimiter := true;
+    ss.Delimiter := '_';
+    ss.DelimitedText := tblName;
+
+    for I := 0 to ss.Count - 1 do begin
+      s := ss[i];
+      if s.Length<=1 then begin
+        continue;
+      end;
+      Result := Result + fstCharUpper(s);
+    end;
+  finally
+    ss.Free;
+  end;
+end;
+
+class function TCharUtils.getPropertyName(const fldName: string): string;
+var ss: TStrings;
+  i: integer;
+  s: string;
+begin
+  Result := '';
+  ss := TStringList.Create;
+  try
+    //pos_t_vip_type
+    ss.StrictDelimiter := true;
+    ss.Delimiter := '_';
+    ss.DelimitedText := fldName;
+
+    for I := 0 to ss.Count - 1 do begin
+      s := ss[i];
+      if s.Length<=1 then begin
+        continue;
+      end;
+      if (I=0) then begin
+        Result := s;
+      end else begin
+        Result := Result + fstCharUpper(s);
+      end;
+    end;
+  finally
+    ss.Free;
+  end;
 end;
 
 end.

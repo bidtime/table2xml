@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, ExtCtrls, ToolWin, ComCtrls, StdCtrls;
+  Dialogs, ExtCtrls, ToolWin, ComCtrls, StdCtrls, uFrmSetting;
 
 type
   TfrmMain = class(TForm)
@@ -25,20 +25,21 @@ type
     ToolButton2: TToolButton;
     cbxPrepare: TCheckBox;
     ToolButton3: TToolButton;
-    Label2: TLabel;
     ToolButton4: TToolButton;
-    cbxBitType: TComboBox;
     ToolButton5: TToolButton;
-    Label3: TLabel;
-    cbxTinyIntType: TComboBox;
     btnClear: TButton;
     ToolButton6: TToolButton;
     ToolBar2: TToolBar;
+    btnSetting: TButton;
+    cbxBeanName: TCheckBox;
     procedure btnDoClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure btnClearClick(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
+    procedure btnSettingClick(Sender: TObject);
   private
     { Private declarations }
+    FFrmSetting: TfrmSetting;
     procedure setMsg(const S: string);
   public
     { Public declarations }
@@ -71,6 +72,15 @@ end;
 
 procedure TfrmMain.btnDoClick(Sender: TObject);
 
+  function fldToPropertyName(const fldName: string): string;
+  begin
+    if self.cbxBeanName.Checked then begin
+      Result := TCharUtils.getPropertyName(fldName);
+    end else begin
+      Result :=  fldName;
+    end;
+  end;
+
   procedure addToXml_First(const talName, clzName: string; strs: TStrings);
   begin
     strs.Add('<?xml version="1.0" encoding="utf-8"?>');
@@ -85,12 +95,13 @@ procedure TfrmMain.btnDoClick(Sender: TObject);
 
     procedure addAndCondtn(split: string);
     var i: integer;
-      tmp: string;
+      tmp, S: string;
     begin
       split := split + '  ';
       for I := 0 to strsCol.Count - 1 do begin
+        S := strsCol[I];
         tmp := '<< AND %s = #%s# >>';
-        strs.Add(split + format(tmp, [strsCol[I], strsCol[I]]));
+        strs.Add(split + format(tmp, [S, fldToPropertyName(S)]));
       end;
     end;
 
@@ -203,7 +214,6 @@ procedure TfrmMain.btnDoClick(Sender: TObject);
       cmt: string;
     begin
       cmt := TCharUtils.rightStrByLastIdxOf(S, 'COMMENT', false).Trim;
-      //cmt := TCharSplit.getSpltValueOfKey(S, 'COMMENT', #32);
       if not cmt.IsEmpty then begin
         if cmt.StartsWith('''') then begin
           cmt := cmt.Substring(1, cmt.Length);
@@ -222,37 +232,29 @@ procedure TfrmMain.btnDoClick(Sender: TObject);
       var fldType_java: string;
       begin
         if (SameText(fldType, 'decimal')) or ( SameText(fldType, 'numberic'))
-          or ( SameText(fldType, 'double')) then begin
+            then begin
+          fldType_java := self.FFrmSetting.getDecimal();
+        end else if ( SameText(fldType, 'double')) then begin
           fldType_java := 'Double';
-        end else if (SameText(fldType, 'varchar')) or
-          (SameText(fldType, 'char')) or
-          (SameText(fldType, 'TEXT'))
-          then begin
+        end else if (SameText(fldType, 'varchar')) or (SameText(fldType, 'char')) or
+            (SameText(fldType, 'TEXT')) then begin
           fldType_java := 'String';
         end else if SameText(fldType, 'bigint') then begin
-          fldType_java := 'BigInteger';
+          fldType_java := self.FFrmSetting.getBigInt();
         end else if (SameText(fldType, 'bit')) or (SameText(fldType, 'BOOLEAN')) then begin
-          if SameText(cbxBitType.text, '') then begin
-            fldType_java := 'Boolean';
-          end else begin
-            fldType_java := cbxBitType.text;
-          end;
+          fldType_java := self.FFrmSetting.getBit();
         end else if SameText(fldType, 'tinyint') then begin
-          if SameText(cbxBitType.text, '') then begin
-            fldType_java := 'Short';
-          end else begin
-            fldType_java := cbxTinyIntType.text;
-          end;
+          fldType_java := self.FFrmSetting.getTinyInt();
         end else if (SameText(fldType, 'int')) or (SameText(fldType, 'integer')) then begin
           //if StrToIntDef(fldLen, 4)>10 then begin
             fldType_java := 'Long';
           //end else begin
           //  fldType_java := 'Integer';
           //end;
-        end else if (SameText(fldType, 'SMALLINT')) or (SameText(fldType, 'MEDIUMINT')) then begin
+        end else if (SameText(fldType, 'SMALLINT')) then begin
+          fldType_java := self.FFrmSetting.getSmallInt();
+        end else if (SameText(fldType, 'MEDIUMINT')) then begin
           fldType_java := 'Integer';
-        end else if SameText(fldType, 'tinyint') then begin
-          fldType_java := 'Short';
         end else if SameText(fldType, 'float') or ( SameText(fldType, 'real')) then begin
           fldType_java := 'Float';
         end else if (SameText(fldType, 'datetime'))
@@ -261,7 +263,7 @@ procedure TfrmMain.btnDoClick(Sender: TObject);
         end else if (SameText(fldType, 'time')) then begin
           fldType_java := 'Time';
         end else if (SameText(fldType, 'timestamp')) then begin
-          fldType_java := 'Timestamp';
+          fldType_java := self.FFrmSetting.getTimeStamp();
         end else if (SameText(fldType, 'year')) then begin
           fldType_java := 'Integer';
         end else begin
@@ -345,7 +347,7 @@ procedure TfrmMain.btnDoClick(Sender: TObject);
       end;
       //
       strsJava.add(strDiff + 'private ' + javaType + ' ' +
-        TCharUtils.fstCharLower(fldName) + ';');
+        fldToPropertyName(fldName) + ';');
     end;
 
     function getPropertyFlag(const isPK: boolean): string;
@@ -375,11 +377,6 @@ procedure TfrmMain.btnDoClick(Sender: TObject);
     c := ' ';
     strs := TStringList.Create;
     try
-      //if pos(',', str) = length(str) then begin
-      //  s := leftStr(str, length(str)-1);
-      //end else begin
-      //  s := str;
-      //end;
       fldName := TCharSplit.getSplitIdx(s, c, 0);
       isPK := pkMap.ContainsKey(fldName);
       strsCol.Add(fldName);
@@ -394,7 +391,7 @@ procedure TfrmMain.btnDoClick(Sender: TObject);
       end;
       notNull := TCharSplit.existsSplitKey(s, 'NOT_NULL', c);
       addKeyToStrs(getPropertyFlag(isPK), strs);
-      addKVToStrs('name', fldName, strs);
+      addKVToStrs('name', fldToPropertyName(fldName), strs);
       addKVToStrs('column', fldName, strs);
       addKVToStrs('type', fldType, strs);
       addKVToStrs('length', fldLen, strs);
@@ -414,27 +411,6 @@ procedure TfrmMain.btnDoClick(Sender: TObject);
   end;
 
   procedure doneProLines(strs: TStrings; const pkMap: TDictionary<string, string>);
-
-    function getClassName(const talName: string): string;
-    var ss: TStrings;
-      i: integer;
-      s: string;
-    begin
-      Result := '';
-      ss := TStringList.Create;
-      try
-        TCharSplit.SplitChar(talName, '_', ss); //pos_t_vip_type
-        for I := 0 to ss.Count - 1 do begin
-          s := ss[i];
-          if s.Length<=1 then begin
-            continue;
-          end;
-          Result := Result + TCharUtils.fstCharUpper(s);
-        end;
-      finally
-        ss.Free;
-      end;
-    end;
 
     function getTableName(const s: string): string;
     var temp: string;
@@ -463,7 +439,7 @@ procedure TfrmMain.btnDoClick(Sender: TObject);
         //if (AnsiStartsText('CREATE TABLE ', s)) then begin      //begin
         if (S.StartsWith('CREATE TABLE ', true)) then begin      //begin
           tblName := getTableName(s);
-          clzName := getClassName(tblName);
+          clzName := TCharUtils.getClassName(tblName);
           addToXml_First( tblName, clzName, MemoXML.Lines );
           MemoClass.Text := format(CLASS_PROPERTY, [clzName]);  //end
         end else if (S.StartsWith(')')) then begin
@@ -560,9 +536,20 @@ begin
   setMsg('done.');
 end;
 
+procedure TfrmMain.btnSettingClick(Sender: TObject);
+begin
+  FFrmSetting.ShowModal;
+end;
+
 procedure TfrmMain.FormCreate(Sender: TObject);
 begin
+  FFrmSetting := TfrmSetting.Create(self);
   self.WindowState := wsMaximized;
+end;
+
+procedure TfrmMain.FormDestroy(Sender: TObject);
+begin
+  FFrmSetting.Free;
 end;
 
 procedure TfrmMain.setMsg(const S: string);

@@ -13,13 +13,14 @@ object frmMain: TfrmMain
   OldCreateOrder = False
   Position = poMainFormCenter
   OnCreate = FormCreate
+  OnDestroy = FormDestroy
   PixelsPerInch = 96
   TextHeight = 12
   object Splitter1: TSplitter
     Left = 278
-    Top = 35
+    Top = 29
     Width = 4
-    Height = 611
+    Height = 617
     ExplicitLeft = 185
     ExplicitTop = 34
     ExplicitHeight = 612
@@ -36,15 +37,13 @@ object frmMain: TfrmMain
   end
   object pnlClient: TPanel
     Left = 282
-    Top = 35
+    Top = 29
     Width = 825
-    Height = 611
+    Height = 617
     Align = alClient
     BevelOuter = bvNone
     Caption = 'pnlClient'
     TabOrder = 1
-    ExplicitTop = 29
-    ExplicitHeight = 617
     object Splitter2: TSplitter
       Left = 0
       Top = 319
@@ -93,7 +92,7 @@ object frmMain: TfrmMain
       Left = 0
       Top = 323
       Width = 825
-      Height = 288
+      Height = 294
       Align = alClient
       Lines.Strings = (
         ''
@@ -109,21 +108,18 @@ object frmMain: TfrmMain
         '}')
       ScrollBars = ssVertical
       TabOrder = 1
-      ExplicitHeight = 294
     end
   end
   object pnlLeft: TPanel
     Left = 0
-    Top = 35
+    Top = 29
     Width = 278
-    Height = 611
+    Height = 617
     Align = alLeft
     TabOrder = 2
-    ExplicitTop = 29
-    ExplicitHeight = 617
     object Splitter3: TSplitter
       Left = 1
-      Top = 283
+      Top = 289
       Width = 276
       Height = 4
       Cursor = crVSplit
@@ -135,7 +131,7 @@ object frmMain: TfrmMain
       Left = 1
       Top = 1
       Width = 276
-      Height = 282
+      Height = 288
       Align = alClient
       Lines.Strings = (
         'CREATE TABLE `ap_car_brand` ('
@@ -186,27 +182,26 @@ object frmMain: TfrmMain
           'ci COMMENT='#39'ap_car_'#21697#29260#39';')
       ScrollBars = ssBoth
       TabOrder = 0
-      ExplicitHeight = 288
     end
     object memoSql: TMemo
       Left = 1
-      Top = 287
+      Top = 293
       Width = 276
       Height = 323
       Align = alBottom
       ScrollBars = ssBoth
       TabOrder = 1
-      ExplicitTop = 293
     end
   end
   object ToolBar2: TToolBar
-    AlignWithMargins = True
-    Left = 3
-    Top = 3
-    Width = 1101
+    Left = 0
+    Top = 0
+    Width = 1107
     Height = 29
     ButtonHeight = 25
+    ButtonWidth = 84
     Caption = 'ToolBar2'
+    List = True
     TabOrder = 3
     object btnClear: TButton
       Left = 0
@@ -250,7 +245,7 @@ object frmMain: TfrmMain
       Caption = #38544#34255#39044#22788#29702
       Checked = True
       State = cbChecked
-      TabOrder = 3
+      TabOrder = 2
     end
     object ToolButton1: TToolButton
       Left = 242
@@ -267,74 +262,54 @@ object frmMain: TfrmMain
       Caption = #29983#25104#39564#35777
       Checked = True
       State = cbChecked
-      TabOrder = 5
-    end
-    object ToolButton3: TToolButton
-      Left = 318
-      Top = 0
-      Width = 7
-      Caption = 'ToolButton3'
-      ImageIndex = 1
-      Style = tbsSeparator
-    end
-    object Label3: TLabel
-      Left = 325
-      Top = 0
-      Width = 54
-      Height = 25
-      Caption = 'tinyInt->'
-    end
-    object cbxTinyIntType: TComboBox
-      Left = 379
-      Top = 2
-      Width = 66
-      Height = 20
-      TabOrder = 4
-      Text = 'Integer'
-      Items.Strings = (
-        'Short'
-        'Integer')
-    end
-    object ToolButton5: TToolButton
-      Left = 445
-      Top = 0
-      Width = 8
-      Caption = 'ToolButton5'
-      ImageIndex = 1
-      Style = tbsSeparator
-    end
-    object Label2: TLabel
-      Left = 453
-      Top = 0
-      Width = 30
-      Height = 25
-      Caption = 'bit->'
-    end
-    object cbxBitType: TComboBox
-      Left = 483
-      Top = 2
-      Width = 66
-      Height = 20
-      ItemIndex = 2
-      TabOrder = 2
-      Text = 'Integer'
-      Items.Strings = (
-        'Boolean'
-        'Short'
-        'Integer'
-        'Long')
+      TabOrder = 3
     end
     object ToolButton2: TToolButton
-      Left = 549
+      Left = 318
       Top = 0
       Width = 8
       Caption = 'ToolButton2'
       ImageIndex = 0
       Style = tbsSeparator
     end
+    object cbxBeanName: TCheckBox
+      Left = 326
+      Top = 0
+      Width = 68
+      Height = 25
+      Caption = #29983#25104#39548#23792
+      Checked = True
+      State = cbChecked
+      TabOrder = 5
+    end
+    object ToolButton3: TToolButton
+      Left = 394
+      Top = 0
+      Width = 7
+      Caption = 'ToolButton3'
+      ImageIndex = 1
+      Style = tbsSeparator
+    end
+    object btnSetting: TButton
+      Left = 401
+      Top = 0
+      Width = 75
+      Height = 25
+      Caption = #35774#32622
+      TabOrder = 4
+      OnClick = btnSettingClick
+    end
+    object ToolButton5: TToolButton
+      Left = 476
+      Top = 0
+      Width = 8
+      Caption = 'ToolButton5'
+      ImageIndex = 1
+      Style = tbsSeparator
+    end
     object Label1: TLabel
       AlignWithMargins = True
-      Left = 557
+      Left = 484
       Top = 0
       Width = 282
       Height = 25

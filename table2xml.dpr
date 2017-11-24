@@ -4,7 +4,8 @@ uses
   Forms,
   uFrmMain in 'src\uFrmMain.pas' {frmMain},
   uCharSplit in 'src\utils\uCharSplit.pas',
-  uCharUtils in 'src\utils\uCharUtils.pas';
+  uCharUtils in 'src\utils\uCharUtils.pas',
+  uFrmSetting in 'src\frm\uFrmSetting.pas' {frmSetting};
 
 {$R *.res}
 
