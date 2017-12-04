@@ -118,6 +118,7 @@ end;
 procedure TfrmSetting.FormCreate(Sender: TObject);
 begin
   setFPath(getAppPath());
+  ctrl_file();
 end;
 
 function TfrmSetting.getAppPath: string;
@@ -158,7 +159,6 @@ end;
 procedure TfrmSetting.setFPath(const S: string);
 begin
   FBName := S + '\' + 'setting.ini';
-  ctrl_file();
 end;
 
 end.
